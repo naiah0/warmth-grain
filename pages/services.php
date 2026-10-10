@@ -11,6 +11,7 @@ $grouped = [];
 foreach ($rows as $r) $grouped[$r['service_type']][] = $r;
 $tomorrow = date('Y-m-d', strtotime('+1 day'));
 ?>
+
 <h1>Film Processing</h1>
 <p>Developing, scanning and printing for every kind of film. Open a process to read the details, or book straight away.</p>
 <p>
