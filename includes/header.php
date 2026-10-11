@@ -21,8 +21,8 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
 <body class="<?= $adminMode ? 'admin-body' : '' ?>">
 <?php if ($adminMode):
   if (!isset($pdo)) require_once __DIR__ . '/../config/db.php';
-  $hdrNew = (int)$pdo->query("SELECT COUNT(*) FROM messages WHERE status='New'")->fetchColumn();
-  $admCur = basename($hdrCur); $admType = $_GET['type'] ?? '';
+  try { $hdrNew = (int)$pdo->query("SELECT COUNT(*) FROM messages WHERE status='New'")->fetchColumn(); }
+  catch (PDOException $e) { $hdrNew = 0; }  $admCur = basename($hdrCur); $admType = $_GET['type'] ?? '';
   $admCur = ['product_form.php' => 'products.php', 'event_registrations.php' => 'events.php', 'scan.php' => 'index.php'][$admCur] ?? $admCur;
   if ($admCur === 'records.php' && $admType === '') $admType = 'booking';
   $admLinks = [
