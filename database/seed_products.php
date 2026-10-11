@@ -1,12 +1,16 @@
 <?php
-require_once __DIR__ . '/../includes/auth.php';
 require_once __DIR__ . '/../config/db.php';
+function slug($s) { return trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($s)), '-'); }
 
-if ($pdo->query('SELECT COUNT(*) FROM order_items')->fetchColumn() > 0) {
-    die('Orders already exist, so seeding was stopped to protect your data.');
+// Admin account (change this password after your first login)
+$chk = $pdo->prepare('SELECT COUNT(*) FROM users WHERE email=?');
+$chk->execute(['admin@warmthandgrain.test']);
+if (!$chk->fetchColumn()) {
+    $pdo->prepare("INSERT INTO users (full_name,email,phone,password_hash,role) VALUES ('W&G Admin','admin@warmthandgrain.test','09170000000',?,'admin')")
+        ->execute([password_hash('Admin@12345', PASSWORD_DEFAULT)]);
+    echo 'Admin account created.<br>';
 }
-$pdo->exec('DELETE FROM products');
-$pdo->exec('ALTER TABLE products AUTO_INCREMENT = 1');
+if ($pdo->query('SELECT COUNT(*) FROM products')->fetchColumn() > 0) die('Products already exist.');
 $catId = $pdo->query('SELECT name, category_id FROM categories')->fetchAll(PDO::FETCH_KEY_PAIR);
 
 $data = [
@@ -64,14 +68,16 @@ $data = [
 
 $ins = $pdo->prepare('INSERT INTO products (category_id,name,description,purpose,applicable_to,price,stock,image) VALUES (?,?,?,?,?,?,?,?)');
 $n = 0;
+$pdo->beginTransaction();
 foreach ($data as $cat => [$purpose, $defaultFor, $items]) {
     foreach ($items as $line) {
         $parts = explode('|', $line);
         $name = $parts[0]; $price = $parts[1]; $for = $parts[2] ?? $defaultFor;
         $desc = "$name from the Warmth&Grain curated selection. Checked and ready to use.";
         $stock = $cat === 'Cameras' ? mt_rand(1, 5) : mt_rand(5, 40);
-        $ins->execute([$catId[$cat], $name, $desc, $purpose, $for, $price, $stock, slug($name) . '.jpg']);
+        $ins->execute([$catId[$cat], $name, $desc, $purpose, $for, $price, $stock, slug($name)]);
         $n++;
     }
 }
+$pdo->commit();
 echo "Done: $n products added. Delete this file now.";

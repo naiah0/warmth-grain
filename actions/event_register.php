@@ -1,5 +1,6 @@
 <?php
 require_once '../includes/auth.php';
+require_login();
 require_once '../config/db.php';
 
 $eid    = (int)($_POST['event_id'] ?? 0);

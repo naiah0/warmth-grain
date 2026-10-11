@@ -3,52 +3,42 @@ require_once '../includes/auth.php';
 require_login();
 require_once '../config/db.php';
 
-$serviceId = (int)($_POST['service_id'] ?? 0);
-$filmType  = $_POST['film_type'] ?? '';
-$format    = $_POST['film_format'] ?? '';
-$rolls     = (int)($_POST['roll_count'] ?? 0);
-$expo      = (int)($_POST['exposures'] ?? 0);
-$rush      = isset($_POST['rush']) ? 1 : 0;
-$return    = $_POST['return_method'] ?? '';
-$address   = trim($_POST['delivery_address'] ?? '');
-$date      = $_POST['dropoff_date'] ?? '';
-$slot      = $_POST['time_slot'] ?? '';
-$notes     = trim($_POST['notes'] ?? '');
-$method    = $_POST['method'] ?? '';
-$refNo     = trim($_POST['reference_no'] ?? '');
-$errors    = payment_errors($method, $refNo);
+$svc = function ($id, $type) use ($pdo) {
+    if (!$id) return null;
+    $s = $pdo->prepare('SELECT * FROM services WHERE service_id=? AND service_type=? AND is_active=1'); $s->execute([$id, $type]); return $s->fetch() ?: null;
+};
+$pkg  = (int)($_POST['package_id'] ?? 0) ?: null;
+$out  = $_POST['output_option'] ?? '';
+$dev  = $svc((int)($_POST['developing_id'] ?? 0), 'Developing');
+$scan = $out === 'Prints only' ? null : $svc((int)($_POST['scanning_id'] ?? 0), 'Scanning');
+$prn  = $out === 'Digital only' ? null : $svc((int)($_POST['printing_id'] ?? 0), 'Printing');
+$fmt = $_POST['film_format'] ?? ''; $rolls = (int)($_POST['roll_count'] ?? 0); $expo = (int)($_POST['exposures'] ?? 0);
+$date = $_POST['dropoff_date'] ?? ''; $slot = $_POST['time_slot'] ?? ''; $notes = trim($_POST['notes'] ?? '');
+$errors = [];
 
-$stmt = $pdo->prepare('SELECT * FROM services WHERE service_id=? AND is_active=1');
-$stmt->execute([$serviceId]);
-$service = $stmt->fetch();
-
-if (!$service) $errors[] = 'Please select a valid service.';
-if (!in_array($filmType, ['Color Negative (C-41)', 'Black & White', 'Slide (E-6)', 'Cine (ECN-2)', 'Other'], true)) $errors[] = 'Invalid film type.';
-if (!in_array($format, ['35mm', '120', 'APS', 'Other'], true)) $errors[] = 'Invalid film format.';
+if (!$dev) $errors[] = 'Choose a developing process first.';
+if (!in_array($out, ['Digital only', 'Prints only', 'Both'], true)) $errors[] = 'Choose an output option.';
+if (in_array($out, ['Digital only', 'Both'], true) && !$scan) $errors[] = 'Choose a scanning option.';
+if (in_array($out, ['Prints only', 'Both'], true) && !$prn) $errors[] = 'Choose a printing option.';
+if (!in_array($fmt, ['35mm', '120', 'APS', 'Other'], true)) $errors[] = 'Invalid film format.';
 if ($rolls < 1 || $rolls > 50) $errors[] = 'Rolls must be between 1 and 50.';
 if (!in_array($expo, [12, 24, 36], true)) $errors[] = 'Invalid number of exposures.';
-if (!in_array($return, ['Pickup', 'Delivery'], true)) $errors[] = 'Choose pickup or delivery.';
-if ($return === 'Delivery' && $address === '') $errors[] = 'Delivery address is required.';
-if (!in_array($slot, ['10:00 AM - 12:00 PM', '12:00 PM - 3:00 PM', '3:00 PM - 6:00 PM'], true)) $errors[] = 'Choose a time slot.';
+if (!in_array($slot, TIME_SLOTS, true)) $errors[] = 'Choose a time slot.';
+if ($notes === '') $errors[] = 'Fill in the notes (type "None" if you have no special instructions).';
 $d = DateTime::createFromFormat('Y-m-d', $date);
-if (!$d || $d->format('Y-m-d') !== $date) $errors[] = 'Enter a valid drop-off date.';
-elseif ($date <= date('Y-m-d')) $errors[] = 'Drop-off date must be in the future.';
+if (!$d || $d->format('Y-m-d') !== $date) $errors[] = 'Pick a drop-off date from the calendar.';
+elseif (!date_ok($pdo, $date, false)) $errors[] = 'That drop-off date is not available (we are open Monday to Friday).';
 
-if ($errors) {
-    set_flash('error', $errors);
-    header('Location: ' . BASE_URL . 'pages/services.php?book=' . $serviceId);
-    exit;
+if ($errors) { set_flash('error', $errors); header('Location: ' . BASE_URL . 'pages/book-service.php'); exit; }
+
+$lines = []; $sub = 0;
+foreach ([['Developing', $dev], ['Scanning', $scan], ['Printing', $prn]] as [$label, $s]) {
+    if ($s) { $amt = $s['price_per_roll'] * $rolls; $sub += $amt; $lines[] = ['label' => "$label: {$s['name']} × $rolls", 'amount' => $amt]; }
 }
-
-$total = $service['price_per_roll'] * $rolls * ($rush ? 1.5 : 1);   // always recomputed on the server
-
-$pdo->beginTransaction();
-$pdo->prepare('INSERT INTO service_bookings (user_id,service_id,film_type,film_format,roll_count,exposures,rush,return_method,delivery_address,dropoff_date,time_slot,notes,total_price) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)')
-    ->execute([$_SESSION['user_id'], $serviceId, $filmType, $format, $rolls, $expo, $rush, $return, $return === 'Delivery' ? $address : null, $date, $slot, $notes, $total]);
-$bookingId = $pdo->lastInsertId();
-record_payment($pdo, $_SESSION['user_id'], 'booking', $bookingId, $method, $refNo, $total);
-$pdo->commit();
-
-set_flash('success', "Booking #$bookingId confirmed. Total: " . peso($total));
-header('Location: ' . BASE_URL . 'pages/account/purchases.php?tab=bookings');
+$_SESSION['pending'] = [
+    'type' => 'booking', 'back' => BASE_URL . 'pages/book-service.php', 'subtotal' => $sub, 'lines' => $lines,
+    'data' => ['package_id' => $pkg, 'developing_id' => $dev['service_id'], 'scanning_id' => $scan['service_id'] ?? null, 'printing_id' => $prn['service_id'] ?? null,
+               'output_option' => $out, 'film_format' => $fmt, 'roll_count' => $rolls, 'exposures' => $expo, 'dropoff_date' => $date, 'time_slot' => $slot, 'notes' => $notes],
+];
+header('Location: ' . BASE_URL . 'pages/payment.php');
 exit;

@@ -2,19 +2,17 @@
 require_once '../includes/auth.php';
 require_once '../config/db.php';
 
-$id  = (int)($_POST['product_id'] ?? 0);
-$qty = (int)($_POST['qty'] ?? 0);
+$id = (int)($_POST['product_id'] ?? 0); $qty = (int)($_POST['qty'] ?? 1);
+$back = $_POST['back'] ?? '';
+if (strpos($back, BASE_URL) !== 0 || strpos($back, '//') !== false || preg_match('/[\r\n]/', $back)) $back = BASE_URL . 'pages/shop.php';
 
-$stmt = $pdo->prepare('SELECT stock FROM products WHERE product_id=? AND is_active=1');
+$stmt = $pdo->prepare('SELECT name, stock FROM products WHERE product_id=? AND is_active=1');
 $stmt->execute([$id]);
-$stock = $stmt->fetchColumn();
-
-if ($stock === false || $qty < 1) {
-    set_flash('error', 'Invalid product or quantity.');
-} else {
-    $current = $_SESSION['cart'][$id] ?? 0;
-    $_SESSION['cart'][$id] = min($current + $qty, (int)$stock);
-    set_flash('success', 'Added to cart.');
+$p = $stmt->fetch();
+if (!$p || $p['stock'] < 1 || $qty < 1) set_flash('error', 'That product is not available.');
+else {
+    $_SESSION['cart'][$id] = min(($_SESSION['cart'][$id] ?? 0) + $qty, (int)$p['stock']);
+    set_flash('success', $p['name'] . ' was added to your cart.');
 }
-header('Location: ' . BASE_URL . 'pages/cart.php');
+header('Location: ' . $back);
 exit;

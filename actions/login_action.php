@@ -21,5 +21,11 @@ $_SESSION['name']    = $user['full_name'];
 $_SESSION['role']    = $user['role'];
 
 $next = safe_next();
-header('Location: ' . ($next ?: BASE_URL . ($user['role'] === 'admin' ? 'admin/index.php' : 'pages/account/dashboard.php')));
+if ($user['role'] === 'admin') {
+    unset($_SESSION['next']);
+    header('Location: ' . BASE_URL . 'admin/index.php');
+} else {
+    $next = safe_next();
+    header('Location: ' . ($next ?: BASE_URL . 'index.php'));
+}
 exit;

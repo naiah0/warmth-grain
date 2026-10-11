@@ -1,6 +1,4 @@
 <?php
-require 'config/db.php';
-$products = $pdo->query("SELECT name, price FROM products")->fetchAll();
-foreach ($products as $p) {
-    echo htmlspecialchars($p['name']) . ' - ₱' . number_format($p['price'], 2) . '<br>';
-}
+require 'db.php';
+foreach (['users','categories','products','services','packages','repair_services','events'] as $t)
+    echo $t . ': ' . $pdo->query("SELECT COUNT(*) FROM $t")->fetchColumn() . '<br>';

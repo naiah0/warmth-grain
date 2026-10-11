@@ -3,3 +3,5 @@
 Thumbs.db
 config/db.php
 *.zip
+uploads/
+

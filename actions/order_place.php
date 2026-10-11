@@ -2,6 +2,7 @@
 require_once '../includes/auth.php';
 require_login();
 require_once '../config/db.php';
+require_once '../includes/payment.php';
 
 $cart   = $_SESSION['cart'] ?? [];
 $name   = trim($_POST['contact_name'] ?? '');
@@ -48,6 +49,17 @@ if (!$errors) {
         $errors[] = $ex->getMessage();
     }
 }
+
+function payment_errors($method, $refNo) {
+    $errors = [];
+    // validation logic for payments...
+    return $errors;
+}
+
+function record_payment($pdo, $userId, $type, $orderId, $method, $refNo, $total) {
+    // payment recording logic...
+}
+
 set_flash('error', $errors);
 header('Location: ' . BASE_URL . 'pages/checkout.php');
 exit;
