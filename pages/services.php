@@ -16,12 +16,12 @@ echo banner('Film Processing', 'Developing, scanning and printing for every kind
 <p class="lead">Our usual combinations, priced per roll.</p>
 <div class="pack-grid">
   <?php foreach ($packs as $k): $per = $k['dp'] + ($k['sp'] ?? 0) + ($k['prp'] ?? 0); ?>
-    <div class="card">
+    <div class="pack-card">
       <h3><?= e($k['name']) ?></h3>
       <p class="small"><?= e($k['description']) ?></p>
       <ul><li><?= e($k['dn']) ?></li><?php if ($k['sn']): ?><li><?= e($k['sn']) ?></li><?php endif; ?><?php if ($k['pn']): ?><li><?= e($k['pn']) ?></li><?php endif; ?></ul>
       <p class="small"><?= e($k['output_option']) ?></p>
-      <p class="price"><?= peso($per) ?> / roll</p>
+      <div class="card-foot"><span class="price-pill"><?= peso($per) ?> / roll</span></div>
     </div>
   <?php endforeach; ?>
 </div>
@@ -39,7 +39,7 @@ echo banner('Film Processing', 'Developing, scanning and printing for every kind
             <h3><?= e($s['name']) ?></h3>
             <p class="small"><?= e($s['description']) ?></p>
             <ul><?php foreach (array_filter(explode('|', (string)$s['inclusions'])) as $i): ?><li><?= e($i) ?></li><?php endforeach; ?></ul>
-            <div class="svc-foot"><span class="price"><?= peso($s['price_per_roll']) ?> / roll</span><span class="small">Turnaround: <?= e($s['turnaround'] ?: 'TBA') ?></span></div>
+            <div class="card-foot"><span class="price-pill"><?= peso($s['price_per_roll']) ?> / roll</span><span class="small">Turnaround: <?= e($s['turnaround'] ?: 'TBA') ?></span></div>
           </div>
         <?php endforeach; ?>
       </div>

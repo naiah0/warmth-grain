@@ -12,9 +12,10 @@ include '../includes/header.php';
     <h1 class="page-title">Create an Account</h1>
     <form class="form" method="post" action="<?= BASE_URL ?>actions/register_action.php" data-validate novalidate>
       <label for="full_name">Full Name</label><input type="text" id="full_name" name="full_name" required>
-      <label for="email">Email</label><input type="email" id="email" name="email" required>
-      <label for="phone">Phone (09XXXXXXXXX)</label><input type="text" id="phone" name="phone" data-phone required>
-      <label for="password">Password (8+ characters)</label>
+      <label for="email">Email Address</label><input type="email" id="email" name="email" required>
+      <label for="phone">Mobile Number</label><span class="hint">Use the format 09XXXXXXXXX.</span>
+      <input type="text" id="phone" name="phone" data-phone required>
+      <label for="password">Password</label><span class="hint">Use at least 8 characters.</span>
       <div class="pw"><input type="password" id="password" name="password" minlength="8" required><button type="button" class="pw-toggle" data-toggle-password="password">Show</button></div>
       <label for="confirm">Confirm Password</label><input type="password" id="confirm" name="confirm" data-match="password" required>
       <button class="btn" type="submit">Register</button>

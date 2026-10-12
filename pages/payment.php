@@ -15,9 +15,9 @@ $qrs = ['GoTyme' => 'payment/gotyme', 'GCash' => 'payment/gcash', 'Maya' => 'pay
   <form id="payForm" method="post" action="<?= BASE_URL ?>actions/payment_submit.php" enctype="multipart/form-data">
     <div class="pay-box">
       <div>
-        <h3>Choose a payment method</h3>
+        <h3>Choose a Payment Method</h3>
         <div class="pay-methods" style="margin-top:.6rem">
-          <?php foreach (PAY_METHODS as $m): ?><label class="pay-option"><input type="radio" name="method" value="<?= e($m) ?>"><?= e($m === 'Cash' ? 'Cash (pay on site)' : $m) ?></label><?php endforeach; ?>
+          <?php foreach (PAY_METHODS as $m): ?><label class="pay-option"><input type="radio" name="method" value="<?= e($m) ?>"><?= e(pay_label($m)) ?></label><?php endforeach; ?>
         </div>
       </div>
       <div class="pay-right">
@@ -28,10 +28,10 @@ $qrs = ['GoTyme' => 'payment/gotyme', 'GCash' => 'payment/gcash', 'Maya' => 'pay
             <img src="<?= img($path) ?>" alt="<?= e($m) ?> QR code"><p class="small muted">Account name: Warmth&amp;Grain</p>
           </div>
         <?php endforeach; ?>
-        <div class="qr-panel" data-method="Cash"><p>Pay <strong><?= peso($t['total']) ?></strong> in cash when you visit the lab. Your payment shows as Pending until we receive it.</p></div>
+        <div class="qr-panel" data-method="Cash"><p>Pay <strong><?= peso($t['total']) ?></strong> at the lab during your visit. Your payment will show as Pending until we receive it.</p></div>
         <div id="proofBox" style="display:none;margin-top:.8rem">
-          <label for="proof"><strong>Attach proof of payment</strong></label>
-          <span class="hint">A screenshot of your payment (JPG, PNG or WEBP, max 3 MB).</span>
+          <label for="proof"><strong>Attach Proof of Payment</strong></label>
+          <span class="hint">A screenshot of your payment (JPG, PNG or WEBP, maximum 3 MB).</span>
           <input type="file" id="proof" name="proof" accept="image/jpeg,image/png,image/webp">
           <p class="small muted" id="fileName">No file attached yet</p>
         </div>
@@ -43,7 +43,7 @@ $qrs = ['GoTyme' => 'payment/gotyme', 'GCash' => 'payment/gcash', 'Maya' => 'pay
     </div>
   </form>
   <div class="side"><div class="side-box">
-    <h3>Order summary</h3>
+    <h3>Order Summary</h3>
     <div class="summary"><?php foreach ($pend['lines'] as $l): ?><div><span><?= e($l['label']) ?></span><span><?= peso($l['amount']) ?></span></div><?php endforeach; ?></div>
     <?= breakdown_html($t) ?>
   </div></div>

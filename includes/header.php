@@ -21,8 +21,8 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
 <body class="<?= $adminMode ? 'admin-body' : '' ?>">
 <?php if ($adminMode):
   if (!isset($pdo)) require_once __DIR__ . '/../config/db.php';
-  try { $hdrNew = (int)$pdo->query("SELECT COUNT(*) FROM messages WHERE status='New'")->fetchColumn(); }
-  catch (PDOException $e) { $hdrNew = 0; }  $admCur = basename($hdrCur); $admType = $_GET['type'] ?? '';
+  $hdrNew = (int)$pdo->query("SELECT COUNT(*) FROM messages WHERE status='New'")->fetchColumn();
+  $admCur = basename($hdrCur); $admType = $_GET['type'] ?? '';
   $admCur = ['product_form.php' => 'products.php', 'event_registrations.php' => 'events.php', 'scan.php' => 'index.php'][$admCur] ?? $admCur;
   if ($admCur === 'records.php' && $admType === '') $admType = 'booking';
   $admLinks = [
@@ -42,7 +42,7 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
   </nav>
   <div class="admin-user">
     <a class="admin-profile" href="<?= BASE_URL ?>admin/profile.php"><?= icon('user', 18) ?> <?= e($_SESSION['name']) ?></a>
-    <a class="btn btn-danger btn-sm" href="<?= BASE_URL ?>pages/logout.php" data-confirm="Log out of your account?">Logout</a>
+    <a class="btn btn-danger btn-sm btn-logout" href="<?= BASE_URL ?>pages/logout.php" data-confirm="Log out of your account?">LOGOUT</a>
   </div>
 </header>
 <?php else: ?>
@@ -70,9 +70,9 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
     <a class="nav-item <?= $hdrIs('purchases.php') . $hdrIs('thank-you.php') . $hdrIs('payment.php') ?>" href="<?= BASE_URL ?>pages/account/purchases.php" title="My Purchases"><?= icon('bag') ?><span class="lbl">My Purchases</span></a>
     <a class="account-card" href="<?= BASE_URL ?>pages/account/profile.php" title="My Account">
       <span class="acct-icon"><?= icon('user') ?></span>
-      <span class="lbl acct-text"><strong><?= e($_SESSION['name']) ?></strong><span class="acct-no">Account No. <?= e(account_no($_SESSION['user_id'])) ?></span></span>
+      <span class="lbl acct-text"><strong><?= e($_SESSION['name']) ?></strong><span class="acct-no"><?= e(account_no($_SESSION['user_id'])) ?></span></span>
     </a>
-    <a class="nav-item logout-item" href="<?= BASE_URL ?>pages/logout.php" title="Logout" data-confirm="Log out of your account?"><?= icon('logout') ?><span class="lbl">Logout</span></a>
+    <a class="nav-item logout-item" href="<?= BASE_URL ?>pages/logout.php" title="Logout" data-confirm="Log out of your account?"><?= icon('logout') ?><span class="lbl">LOGOUT</span></a>
   </div>
   <?php endif; ?>
 </aside>

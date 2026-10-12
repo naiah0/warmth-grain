@@ -17,6 +17,7 @@ const BIZ_ADDRESS = 'Unit 12, Example Building, Example Street, Quezon City, Met
 
 function e($v) { return htmlspecialchars((string)$v, ENT_QUOTES, 'UTF-8'); }
 function peso($n) { return '₱' . number_format((float)$n, 2); }
+function pay_label($m) { return $m === 'Cash' ? 'Pay at the Lab' : $m; }
 function slug($s) { return trim(preg_replace('/[^a-z0-9]+/', '-', strtolower($s)), '-'); }
 function account_no($id) { return 'WG-' . str_pad((string)$id, 5, '0', STR_PAD_LEFT); }
 function ref_code($type, $id) { return 'WG-' . ['booking' => 'B', 'repair' => 'R', 'order' => 'O'][$type] . '-' . str_pad((string)$id, 4, '0', STR_PAD_LEFT); }
@@ -198,6 +199,6 @@ function product_card($p) {
       . ($out ? '<span class="out-label">Out of Stock</span>' : '') . '</div>'
       . '<h3><a href="' . $url . '">' . e($p['name']) . '</a></h3>'
       . '<div class="pcard-row"><span class="price">' . peso($p['price']) . '</span>'
-      . '<form method="post" action="' . e(BASE_URL) . 'actions/cart_add.php"><input type="hidden" name="product_id" value="' . (int)$p['product_id'] . '"><input type="hidden" name="qty" value="1"><input type="hidden" name="back" value="' . e($_SERVER['REQUEST_URI']) . '">'
+      . '<form method="post" action="' . e(BASE_URL) . 'actions/cart_add.php" data-ajax-cart><input type="hidden" name="product_id" value="' . (int)$p['product_id'] . '"><input type="hidden" name="qty" value="1"><input type="hidden" name="back" value="' . e($_SERVER['REQUEST_URI']) . '">'
       . '<button class="btn btn-icon" type="submit" title="Add to cart" aria-label="Add to cart"' . ($out ? ' disabled' : '') . '>' . icon('cart', 18) . '</button></form></div></div>';
 }

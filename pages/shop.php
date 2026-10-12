@@ -15,7 +15,7 @@ if ($stock === 'in') $where[] = 'p.stock>0';
 if ($stock === 'out') $where[] = 'p.stock=0';
 if (is_numeric($min)) { $where[] = 'p.price>=?'; $params[] = $min; }
 if (is_numeric($max)) { $where[] = 'p.price<=?'; $params[] = $max; }
-$stmt = $pdo->prepare('SELECT p.*, c.name AS cat FROM products p JOIN categories c ON c.category_id=p.category_id WHERE ' . implode(' AND ', $where) . " ORDER BY $orderBy");
+$stmt = $pdo->prepare('SELECT p.*, c.name AS cat FROM products p JOIN categories c ON c.category_id=p.category_id WHERE ' . implode(' AND ', $where)  . " ORDER BY (p.stock < 1), $orderBy");
 $stmt->execute($params);
 $products = $stmt->fetchAll();
 $cats = $pdo->query('SELECT * FROM categories ORDER BY category_id')->fetchAll();

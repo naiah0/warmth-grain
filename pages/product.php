@@ -28,7 +28,7 @@ if (!$p): ?>
       </dl>
       <?php if (!$out): ?>
         <div class="buy-row">
-          <form method="post" action="<?= BASE_URL ?>actions/cart_add.php">
+          <form method="post" action="<?= BASE_URL ?>actions/cart_add.php" data-ajax-cart>
             <input type="hidden" name="product_id" value="<?= (int)$p['product_id'] ?>">
             <input type="hidden" name="back" value="<?= e($_SERVER['REQUEST_URI']) ?>">
             <div class="qty-control">

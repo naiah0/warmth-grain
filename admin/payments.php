@@ -34,13 +34,13 @@ $stmt->execute($params); $rows = $stmt->fetchAll();
   <tr><th>#</th><th>Customer</th><th>For</th><th>Method</th><th>Proof</th><th>Amount</th><th>Status</th><th>Action</th></tr>
   <?php foreach ($rows as $p): $open = in_array($p['status'], ['For Verification', 'Pending']); ?>
     <tr>
-      <td><?= (int)$p['payment_id'] ?></td><td><?= e($p['full_name']) ?></td><td><?= e(ref_code($p['payment_type'], $p['reference_id'])) ?></td><td><?= e($p['method']) ?></td>
+      <td><?= (int)$p['payment_id'] ?></td><td><?= e($p['full_name']) ?></td><td><?= e(ref_code($p['payment_type'], $p['reference_id'])) ?></td><td><?= e(pay_label($p['method'])) ?></td>
       <td><?php if ($p['proof_file']): ?><a href="<?= BASE_URL ?>uploads/proofs/<?= e($p['proof_file']) ?>" target="_blank"><img class="thumb" src="<?= BASE_URL ?>uploads/proofs/<?= e($p['proof_file']) ?>" alt="proof"></a><?php else: ?>-<?php endif; ?></td>
       <td><?= peso($p['amount']) ?></td><td><?= status_badge($p['status']) ?></td>
       <td><?php if ($open): ?><form method="post" class="actions"><input type="hidden" name="payment_id" value="<?= (int)$p['payment_id'] ?>">
-        <button class="btn btn-sm" name="action" value="received" data-confirm="Mark this payment as received?">Payment received</button>
+        <button class="btn btn-ok btn-sm" name="action" value="received" data-confirm="Mark this payment as received?">Payment Received</button>
         <button class="btn btn-danger btn-sm" name="action" value="reject" data-confirm="Reject this payment?">Reject</button></form><?php endif; ?></td>
     </tr>
-  <?php endforeach; if (!$rows) echo '<tr><td colspan="8" class="center">No payments found.</td></tr>'; ?>
+  <?php endforeach; if (!$rows) echo '<tr><td colspan="8">No payments found.</td></tr>'; ?>
 </table></div>
 <?php include '../includes/footer.php'; ?>

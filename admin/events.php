@@ -48,7 +48,7 @@ $rows = $pdo->query('SELECT e.*, (SELECT COALESCE(SUM(guests),0) FROM event_regi
   <tr><th>Title</th><th>Type</th><th>Date</th><th>Location</th><th>Status</th><th>Guests</th><th>Action</th></tr>
   <?php foreach ($rows as $r): ?>
     <tr><td><strong><?= e($r['title']) ?></strong></td><td><?= e($r['event_type']) ?></td><td><?= e(date('M d, Y g:i A', strtotime($r['event_date']))) ?></td><td><?= e($r['location']) ?></td><td><?= status_badge($r['status']) ?></td>
-      <td><a href="event_registrations.php?id=<?= (int)$r['event_id'] ?>"><?= (int)$r['guests'] ?> view</a></td>
+      <td><a class="btn btn-sm" href="event_registrations.php?id=<?= (int)$r['event_id'] ?>"><?= (int)$r['guests'] ?> guests</a></td>
       <td><div class="actions"><a class="btn btn-sm" href="events.php?edit=<?= (int)$r['event_id'] ?>">Edit</a>
         <form method="post"><input type="hidden" name="delete_id" value="<?= (int)$r['event_id'] ?>"><button class="btn btn-danger btn-sm" data-confirm="Delete this event and its sign-ups?">Delete</button></form></div></td></tr>
   <?php endforeach; ?>

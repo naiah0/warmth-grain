@@ -17,5 +17,4 @@ $faqs = [
 ?>
 <h1 class="page-title">Frequently Asked Questions</h1>
 <?php foreach ($faqs as [$q, $a]): ?><details><summary><?= e($q) ?></summary><p><?= e($a) ?></p></details><?php endforeach; ?>
-<p class="center" style="margin-top:1.5rem">Still have a question? <a class="btn" href="contact.php">Contact Us</a></p>
 <?php include '../includes/footer.php'; ?>

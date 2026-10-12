@@ -24,7 +24,7 @@ if (is_logged_in()) { $u = $pdo->prepare('SELECT full_name, phone FROM users WHE
 <div class="two-col">
   <div>
     <div class="table-wrap"><table class="zebra">
-      <tr><th></th><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th></th></tr>
+      <tr><th></th><th>Product</th><th>Price</th><th>Quantity</th><th>Subtotal</th><th>Action</th></tr>
       <?php foreach ($items as $i): $q = $cart[$i['product_id']]; ?>
         <tr class="cart-row" data-price="<?= e($i['price']) ?>">
           <td><img class="cart-thumb" src="<?= img('products/' . $i['image'], 'categories/' . slug($i['cat'])) ?>" alt=""></td>
@@ -41,17 +41,17 @@ if (is_logged_in()) { $u = $pdo->prepare('SELECT full_name, phone FROM users WHE
     <h2 class="plain">Pickup or Delivery</h2>
     <div class="form wide">
       <div class="form-grid">
-        <div><label for="contact_name">Full name</label><span class="hint">The name of the person receiving the order.</span><input type="text" id="contact_name" name="contact_name" value="<?= e($user['full_name']) ?>"></div>
-        <div><label for="contact_phone">Phone number</label><span class="hint">Format: 09XXXXXXXXX, so we can reach you.</span><input type="text" id="contact_phone" name="contact_phone" value="<?= e($user['phone']) ?>"></div>
+        <div><label for="contact_name">Full Name</label><span class="hint">The name of the person receiving the order.</span><input type="text" id="contact_name" name="contact_name" value="<?= e($user['full_name']) ?>"></div>
+        <div><label for="contact_phone">Mobile Number</label><span class="hint">Use the format 09XXXXXXXXX so we can reach you.</span><input type="text" id="contact_phone" name="contact_phone" value="<?= e($user['phone']) ?>"></div>
       </div>
-      <label for="fulfillment">Receive your order by</label>
+      <label for="fulfillment">Receiving Method</label>
       <span class="hint">Pickup is free at the lab. Delivery goes to the address you enter.</span>
       <select id="fulfillment" name="fulfillment"><option>Pickup</option><option>Delivery</option></select>
-      <div id="addressBox" style="display:none"><label for="delivery_address">Delivery address</label><span class="hint">House or unit number, street, barangay, city.</span><input type="text" id="delivery_address" name="delivery_address"></div>
+      <div id="addressBox" style="display:none"><label for="delivery_address">Delivery Address</label><span class="hint">Include the house or unit number, street, barangay and city.</span><input type="text" id="delivery_address" name="delivery_address"></div>
     </div>
   </div>
   <div class="side"><div class="side-box">
-    <h3>Total breakdown</h3>
+    <h3>Total Breakdown</h3>
     <div class="summary" id="cartBreakdown"></div>
     <button class="btn btn-outline" type="submit" style="width:100%;margin-bottom:.6rem">Update Cart</button>
     <button class="btn" type="submit" name="go" value="1" style="width:100%">Proceed to Payment</button>

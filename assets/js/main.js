@@ -1,7 +1,15 @@
-// Navigation: desktop = icon rail, mobile = drawer
+// Navigation: desktop = icon rail, mobile = drawer (always in sync with window size)
+const mq = window.matchMedia('(max-width: 900px)');
+function syncNav() {
+  if (document.body.classList.contains('admin-body')) return;
+  if (mq.matches) document.body.classList.add('nav-closed');
+  else document.body.classList.toggle('nav-closed', localStorage.getItem('wgNavClosed') === '1');
+}
+if (mq.addEventListener) mq.addEventListener('change', syncNav);
+syncNav();
 document.querySelectorAll('.nav-toggle').forEach(b => b.addEventListener('click', () => {
   document.body.classList.toggle('nav-closed');
-  if (window.innerWidth >= 900) localStorage.setItem('wgNavClosed', document.body.classList.contains('nav-closed') ? '1' : '0');
+  if (!mq.matches) localStorage.setItem('wgNavClosed', document.body.classList.contains('nav-closed') ? '1' : '0');
 }));
 const am = document.getElementById('adminMenuBtn');
 if (am) am.addEventListener('click', () => document.getElementById('adminLinks').classList.toggle('open'));
@@ -17,6 +25,28 @@ if (slides.length > 1) {
 document.querySelectorAll('.flash').forEach(a => {
   const hide = () => { a.style.transition = 'opacity .5s'; a.style.opacity = '0'; setTimeout(() => a.remove(), 500); };
   setTimeout(hide, 6000); a.addEventListener('click', hide);
+});
+
+// Small pop-up message
+function toast(msg, isError) {
+  let t = document.getElementById('wgToast');
+  if (!t) { t = document.createElement('div'); t.id = 'wgToast'; t.className = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg; t.classList.toggle('err', !!isError); t.classList.add('show');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// Add to cart without leaving the page or jumping to the top
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-ajax-cart]');
+  if (!f) return;
+  e.preventDefault();
+  fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'X-Requested-With': 'fetch' } })
+    .then(r => r.json())
+    .then(d => {
+      toast(d.message, !d.ok);
+      if (d.count !== undefined) document.querySelectorAll('.cart-link .cart-badge').forEach(b => b.textContent = d.count);
+    })
+    .catch(() => f.submit());
 });
 
 // Confirmation dialogs
@@ -42,13 +72,13 @@ document.addEventListener('click', e => {
   input.dispatchEvent(new Event('input', { bubbles: true }));
 });
 
-// Clickable cards: data-href (ignored when a button or link inside is clicked)
+// Clickable cards
 document.addEventListener('click', e => {
   const c = e.target.closest('[data-href]');
   if (c && !e.target.closest('button, a, form, input, select')) location.href = c.dataset.href;
 });
 
-// Tabs: [data-tabs] with .tab[data-tab] and .tab-panel[data-panel]
+// Tabs
 document.querySelectorAll('[data-tabs]').forEach(box => {
   const open = name => {
     box.querySelectorAll('.tab').forEach(t => t.classList.toggle('active', t.dataset.tab === name));
