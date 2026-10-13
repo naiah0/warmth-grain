@@ -1,4 +1,4 @@
-// Navigation: desktop = icon rail, mobile = drawer (always in sync with window size)
+// Navigation: desktop = icon rail, mobile = drawer (kept in sync with window size)
 const mq = window.matchMedia('(max-width: 900px)');
 function syncNav() {
   if (document.body.classList.contains('admin-body')) return;
@@ -27,6 +27,10 @@ document.querySelectorAll('.flash').forEach(a => {
   setTimeout(hide, 6000); a.addEventListener('click', hide);
 });
 
+// Move the reply notification to <body> so it always sits above everything
+const ns = document.querySelector('.notice-stack');
+if (ns) document.body.appendChild(ns);
+
 // Small pop-up message
 function toast(msg, isError) {
   let t = document.getElementById('wgToast');
@@ -35,16 +39,35 @@ function toast(msg, isError) {
   clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('show'), 2200);
 }
 
-// Add to cart without leaving the page or jumping to the top
+// Add to cart without reloading, so the page never jumps back to the top
 document.addEventListener('submit', e => {
   const f = e.target.closest('form[data-ajax-cart]');
   if (!f) return;
   e.preventDefault();
-  fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'X-Requested-With': 'fetch' } })
-    .then(r => r.json())
-    .then(d => {
+  const btn = f.querySelector('button[type=submit]');
+  if (btn) btn.disabled = true;
+  fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'X-Requested-With': 'fetch' }, credentials: 'same-origin' })
+    .then(r => r.text())
+    .then(t => {
+      let d = null; try { d = JSON.parse(t); } catch (err) {}
+      if (!d) { toast('Could not update your cart. Please try again.', true); return; }
       toast(d.message, !d.ok);
       if (d.count !== undefined) document.querySelectorAll('.cart-link .cart-badge').forEach(b => b.textContent = d.count);
+    })
+    .catch(() => toast('Connection problem. Please try again.', true))
+    .finally(() => { if (btn) btn.disabled = false; });
+});
+
+// Acknowledge an answered inquiry
+document.addEventListener('submit', e => {
+  const f = e.target.closest('form[data-ack]');
+  if (!f) return;
+  e.preventDefault();
+  fetch(f.action, { method: 'POST', body: new FormData(f), headers: { 'X-Requested-With': 'fetch' }, credentials: 'same-origin' })
+    .then(r => r.json())
+    .then(d => {
+      if (d.ok) { const n = f.closest('.notice'); if (n) n.remove(); toast('Thank you. Reply acknowledged.'); }
+      else toast(d.message || 'Could not save.', true);
     })
     .catch(() => f.submit());
 });

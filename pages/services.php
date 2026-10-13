@@ -9,9 +9,14 @@ foreach ($rows as $r) $grouped[$r['service_type']][] = $r;
 $packs = $pdo->query("SELECT pk.*, d.name dn, d.price_per_roll dp, s.name sn, s.price_per_roll sp, pr.name pn, pr.price_per_roll prp
   FROM packages pk JOIN services d ON d.service_id=pk.developing_id LEFT JOIN services s ON s.service_id=pk.scanning_id LEFT JOIN services pr ON pr.service_id=pk.printing_id ORDER BY pk.package_id LIMIT 4")->fetchAll();
 
-echo banner('Film Processing', 'Developing, scanning and printing for every kind of film. Pick a usual package or build your own order.',
+echo banner('Film Processing', 'Have your rolls developed, scanned, and printed in one place.',
   ['banners/film-processing', 'services/developing'], '<a class="btn" href="' . BASE_URL . 'pages/book-service.php">Book a Service</a>');
 ?>
+
+<div class="box">
+  <p style="text-align:justify;">Warmth&Grain provides film processing services for photographers who want to develop, digitize, or print their photographs. Our services are available for different film formats and can be combined based on what you want to do with your photographs.</p>
+  </div>
+
 <h2>Packages</h2>
 <p class="lead">Our usual combinations, priced per roll.</p>
 <div class="pack-grid">
@@ -46,4 +51,5 @@ echo banner('Film Processing', 'Developing, scanning and printing for every kind
     </div>
   <?php endforeach; ?>
 </div>
+
 <?php include '../includes/footer.php'; ?>

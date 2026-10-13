@@ -2,6 +2,7 @@
 .DS_Store
 Thumbs.db
 config/db.php
+config/mail.php
 *.zip
-uploads/
-
+uploads/*
+!uploads/.htaccess

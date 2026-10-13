@@ -15,17 +15,24 @@ if (!$user || !password_verify($pass, $user['password_hash'])) {
     exit;
 }
 
+// Admin accounts need a second step (4-digit passcode) before any access is granted.
+// Nothing below sets user_id/role in the session, so the admin is NOT logged in yet.
+if ($user['role'] === 'admin') {
+    session_regenerate_id(true);
+    $_SESSION['admin_pending'] = [
+        'user_id'  => (int)$user['user_id'],
+        'name'     => $user['full_name'],
+        'attempts' => 0,
+    ];
+    header('Location: ' . BASE_URL . 'pages/login.php');
+    exit;
+}
+
 session_regenerate_id(true);
 $_SESSION['user_id'] = $user['user_id'];
 $_SESSION['name']    = $user['full_name'];
 $_SESSION['role']    = $user['role'];
 
 $next = safe_next();
-if ($user['role'] === 'admin') {
-    unset($_SESSION['next']);
-    header('Location: ' . BASE_URL . 'admin/index.php');
-} else {
-    $next = safe_next();
-    header('Location: ' . ($next ?: BASE_URL . 'index.php'));
-}
+header('Location: ' . ($next ?: BASE_URL . 'index.php'));
 exit;

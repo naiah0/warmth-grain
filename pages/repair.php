@@ -6,6 +6,12 @@ $rs = $pdo->query('SELECT * FROM repair_services WHERE is_active=1 ORDER BY repa
 echo banner('Repair Services', 'Bring us your film camera. We inspect it, fix it and keep you updated on every step.', ['banners/repair', 'services/camera_repair'],
   '<a class="btn" href="' . BASE_URL . 'pages/book-repair.php">Book Repair</a>');
 ?>
+
+<div class="box" style="margin-bottom: 30px;">
+    <p style="text-align:justify;"> Warmth&Grain provides camera repair support for customers who want to have their analog equipment inspected and assessed. Instead of immediately replacing a camera because of an issue, customers can submit it for inspection to determine whether the problem can be repaired. </p>
+</p>
+  </div>
+
 <div style="display:grid;gap:1.1rem">
   <?php foreach ($rs as $r): ?>
     <div class="rcard">

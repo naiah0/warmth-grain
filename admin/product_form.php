@@ -34,12 +34,12 @@ include '../includes/header.php';
 <?= back_button(BASE_URL . 'admin/products.php') ?>
 <form class="form-h" method="post" enctype="multipart/form-data">
   <div class="form-head"><h2 class="plain"><?= e($pageTitle) ?></h2>
-    <div class="actions"><button class="btn" type="submit">Save</button><a class="btn btn-outline" href="products.php">Cancel</a></div></div>
+    <div class="actions"><button class="btn" type="submit">Save</button><a class="btn btn-danger" href="products.php">Cancel</a></div></div>
   <input type="hidden" name="product_id" value="<?= (int)$p['product_id'] ?>"><input type="hidden" name="current_image" value="<?= e($p['image']) ?>">
   <div class="fields">
     <div class="span2"><label for="name">Name</label><input type="text" id="name" name="name" value="<?= e($p['name']) ?>" required></div>
     <div><label for="category_id">Category</label><select id="category_id" name="category_id" required><option value="">-- Select --</option><?php foreach ($cats as $c): ?><option value="<?= (int)$c['category_id'] ?>" <?= $c['category_id'] == $p['category_id'] ? 'selected' : '' ?>><?= e($c['name']) ?></option><?php endforeach; ?></select></div>
-    <div><label>&nbsp;</label><label class="check" style="display:flex;gap:.5rem;align-items:center;font-weight:400"><input type="checkbox" name="is_active" style="width:auto" <?= $p['is_active'] ? 'checked' : '' ?>> Active in store</label></div>
+    <div><label>Visibility</label><label class="check-box"><input type="checkbox" name="is_active" <?= $p['is_active'] ? 'checked' : '' ?>> Active in Store</label></div>
     <div><label for="price">Price (₱)</label><input type="number" id="price" name="price" step="0.01" min="0" value="<?= e($p['price']) ?>" required></div>
     <div><label for="stock">Stock</label><input type="number" id="stock" name="stock" min="0" value="<?= e($p['stock']) ?>" required></div>
     <div class="span2"><label for="photo">Photo (JPG, PNG or WEBP, max 2 MB)</label><input type="file" id="photo" name="photo" accept="image/jpeg,image/png,image/webp"></div>

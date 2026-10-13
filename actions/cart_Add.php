@@ -3,6 +3,7 @@ require_once '../includes/auth.php';
 require_once '../config/db.php';
 
 $ajax = ($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'fetch';
+if ($ajax) ini_set('display_errors', '0');
 $id = (int)($_POST['product_id'] ?? 0); $qty = (int)($_POST['qty'] ?? 1);
 $back = $_POST['back'] ?? '';
 if (strpos($back, BASE_URL) !== 0 || strpos($back, '//') !== false || preg_match('/[\r\n]/', $back)) $back = BASE_URL . 'pages/shop.php';

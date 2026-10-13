@@ -22,10 +22,17 @@ $cfg = $cfgs[$view];
 $statusList = array_merge($cfg['flow'], ['Cancelled']);
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $st = $_POST['status'] ?? '';
+    $st = $_POST['status'] ?? ''; $rid = (int)($_POST['id'] ?? 0);
     if (in_array($st, $statusList, true)) {
-        $pdo->prepare('UPDATE ' . $cfg['table'] . ' SET status=? WHERE ' . $cfg['key'] . '=?')->execute([$st, (int)$_POST['id']]);
-        set_flash('success', 'Status updated.');
+        // Server-side gate: the status can only change once the payment is marked as received (Paid)
+        $chk = $pdo->prepare('SELECT status FROM payments WHERE payment_type=? AND reference_id=? ORDER BY payment_id DESC LIMIT 1');
+        $chk->execute([$view, $rid]);
+        if ($chk->fetchColumn() !== 'Paid') {
+            set_flash('error', 'Payment has not been received yet. Click "Payment Received" in Payments first before updating the status.');
+        } else {
+            $pdo->prepare('UPDATE ' . $cfg['table'] . ' SET status=? WHERE ' . $cfg['key'] . '=?')->execute([$st, $rid]);
+            set_flash('success', 'Status updated.');
+        }
     }
     header('Location: records.php?type=' . $view . '&status=' . urlencode($_GET['status'] ?? '')); exit;
 }
@@ -55,9 +62,11 @@ $rows = $stmt->fetchAll();
       <td><strong><?= e($r['code']) ?></strong></td><td><?= e($r['full_name']) ?></td><td><?= e($r['details']) ?></td>
       <td><?= e(date('M d, Y', strtotime($r['dt']))) ?></td><td><?= peso($r['total']) ?></td>
       <td><?= e(pay_label($r['method'])) ?><br><?= $r['pay_status'] ? status_badge($r['pay_status']) : '' ?></td>
+      <?php $locked = ($r['pay_status'] ?? '') !== 'Paid'; ?>
       <td><form method="post" class="status-form"><input type="hidden" name="id" value="<?= (int)$r['id'] ?>">
-        <select name="status" class="tbl-select"><?php foreach ($statusList as $s): ?><option <?= $s === $r['status'] ? 'selected' : '' ?>><?= e($s) ?></option><?php endforeach; ?></select>
-        <button class="btn btn-sm">Save</button></form></td>
+        <select name="status" class="tbl-select" <?= $locked ? 'disabled' : '' ?>><?php foreach ($statusList as $s): ?><option <?= $s === $r['status'] ? 'selected' : '' ?>><?= e($s) ?></option><?php endforeach; ?></select>
+        <button class="btn btn-sm" <?= $locked ? 'disabled' : '' ?>>Save</button>
+        <?php if ($locked): ?><small class="hint" style="display:block">Confirm payment first</small><?php endif; ?></form></td>
     </tr>
   <?php endforeach; if (!$rows) echo '<tr><td colspan="7">Nothing here yet.</td></tr>'; ?>
 </table></div>

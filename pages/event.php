@@ -9,7 +9,7 @@ include '../includes/header.php';
 if (!$ev): ?>
   <?= back_button(BASE_URL . 'pages/events.php') ?><h1 class="page-title">Event not found</h1>
 <?php else:
-  $photos = $pdo->prepare('SELECT * FROM event_photos WHERE event_id=?'); $photos->execute([$ev['event_id']]);
+  $photos = $pdo->prepare("SELECT * FROM event_photos WHERE event_id=? AND file_name<>? AND file_name<>'placeholder' ORDER BY photo_id LIMIT 2"); $photos->execute([$ev['event_id'], $ev['image']]);
   $upcoming = strtotime($ev['event_date']) >= time();
   $user = ['full_name' => '', 'email' => '', 'phone' => ''];
   if (is_logged_in()) { $u = $pdo->prepare('SELECT full_name, email, phone FROM users WHERE user_id=?'); $u->execute([$_SESSION['user_id']]); $user = $u->fetch() ?: $user; }

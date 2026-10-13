@@ -31,18 +31,22 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
   ];
 ?>
 <header class="admin-bar">
-  <a class="admin-logo" href="<?= BASE_URL ?>admin/index.php">Warmth&amp;Grain <small>Admin</small></a>
-  <button type="button" class="admin-menu-btn" id="adminMenuBtn" aria-label="Menu"><?= icon('menu') ?></button>
-  <nav class="admin-links" id="adminLinks">
-    <?php foreach ($admLinks as $admL): ?>
-      <a href="<?= BASE_URL ?>admin/<?= $admL[0] . ($admL[2] ? '?type=' . $admL[2] : '') ?>" class="<?= ($admCur === $admL[0] && ($admL[2] === '' || $admL[2] === $admType)) ? 'active' : '' ?>">
-        <?= e($admL[1]) ?><?= ($admL[1] === 'Messages' && $hdrNew) ? ' <span class="cart-badge">' . $hdrNew . '</span>' : '' ?>
-      </a>
-    <?php endforeach; ?>
-  </nav>
-  <div class="admin-user">
-    <a class="admin-profile" href="<?= BASE_URL ?>admin/profile.php"><?= icon('user', 18) ?> <?= e($_SESSION['name']) ?></a>
-    <a class="btn btn-danger btn-sm btn-logout" href="<?= BASE_URL ?>pages/logout.php" data-confirm="Log out of your account?">LOGOUT</a>
+  <div class="admin-strip">
+    <div class="admin-head">
+      <a class="admin-brand" href="<?= BASE_URL ?>admin/index.php">Warmth&amp;Grain <small>ADMIN</small></a>
+      <button type="button" class="admin-menu-btn" id="adminMenuBtn" aria-label="Menu"><?= icon('menu') ?></button>
+    </div>
+    <nav class="admin-links" id="adminLinks">
+      <?php foreach ($admLinks as $admL): ?>
+        <a href="<?= BASE_URL ?>admin/<?= $admL[0] . ($admL[2] ? '?type=' . $admL[2] : '') ?>" class="<?= ($admCur === $admL[0] && ($admL[2] === '' || $admL[2] === $admType)) ? 'active' : '' ?>">
+          <?= e($admL[1]) ?><?= ($admL[1] === 'Messages' && $hdrNew) ? ' <span class="cart-badge">' . $hdrNew . '</span>' : '' ?>
+        </a>
+      <?php endforeach; ?>
+    </nav>
+    <div class="admin-user-box">
+      <a class="admin-profile-box <?= $admCur === 'profile.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>admin/profile.php" title="Edit admin profile"><?= icon('user', 18) ?> <span><?= e($_SESSION['name']) ?></span></a>
+      <a class="btn btn-danger btn-sm btn-logout" href="<?= BASE_URL ?>pages/logout.php" data-confirm="Log out of your account?">LOGOUT</a>
+    </div>
   </div>
 </header>
 <?php else: ?>
@@ -70,7 +74,7 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
     <a class="nav-item <?= $hdrIs('purchases.php') . $hdrIs('thank-you.php') . $hdrIs('payment.php') ?>" href="<?= BASE_URL ?>pages/account/purchases.php" title="My Purchases"><?= icon('bag') ?><span class="lbl">My Purchases</span></a>
     <a class="account-card" href="<?= BASE_URL ?>pages/account/profile.php" title="My Account">
       <span class="acct-icon"><?= icon('user') ?></span>
-      <span class="lbl acct-text"><strong><?= e($_SESSION['name']) ?></strong><span class="acct-no"><?= e(account_no($_SESSION['user_id'])) ?></span></span>
+      <span class="lbl acct-text"><span class="acct-no"><?= e(account_no($_SESSION['user_id'])) ?></span></span>
     </a>
     <a class="nav-item logout-item" href="<?= BASE_URL ?>pages/logout.php" title="Logout" data-confirm="Log out of your account?"><?= icon('logout') ?><span class="lbl">LOGOUT</span></a>
   </div>

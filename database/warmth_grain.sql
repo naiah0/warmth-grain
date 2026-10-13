@@ -3,7 +3,7 @@ CREATE DATABASE IF NOT EXISTS warmth_grain
 USE warmth_grain;
 
 SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS messages, events, payments, order_items, orders,
+DROP TABLE IF EXISTS event_photos, messages, events, payments, order_items, orders,
   repairs, service_bookings, services, products, categories, users;
 SET FOREIGN_KEY_CHECKS = 1;
 
@@ -126,13 +126,28 @@ CREATE TABLE events (
   created_at  TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB;
 
+CREATE TABLE event_photos (
+  photo_id  INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  event_id  INT UNSIGNED NOT NULL,
+  file_name VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (event_id) REFERENCES events(event_id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 CREATE TABLE messages (
-  message_id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-  name       VARCHAR(100) NOT NULL,
-  email      VARCHAR(100) NOT NULL,
-  subject    VARCHAR(150) NOT NULL,
-  message    TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+  message_id   INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+  user_id      INT UNSIGNED NULL,
+  name         VARCHAR(100) NOT NULL,
+  email        VARCHAR(100) NOT NULL,
+  subject      VARCHAR(150) NOT NULL,
+  message      TEXT NOT NULL,
+  admin_reply  TEXT NULL,
+  status       ENUM('New','Replied') NOT NULL DEFAULT 'New',
+  replied_at   DATETIME NULL,
+  customer_ack TINYINT(1) NOT NULL DEFAULT 0,
+  acked_at     DATETIME NULL,
+  created_at   TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE SET NULL
 ) ENGINE=InnoDB;
 
 INSERT INTO categories (name) VALUES

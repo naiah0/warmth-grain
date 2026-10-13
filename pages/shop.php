@@ -24,8 +24,13 @@ function shop_url($over = []) {
     $base = ['q' => $_GET['q'] ?? '', 'cat' => $_GET['cat'] ?? '', 'stock' => $_GET['stock'] ?? '', 'min' => $_GET['min'] ?? '', 'max' => $_GET['max'] ?? '', 'sort' => $_GET['sort'] ?? ''];
     return 'shop.php?' . http_build_query(array_filter(array_merge($base, $over), fn($v) => $v !== '' && $v !== null && $v !== 0));
 }
-echo banner('Store', 'Vintage cameras, film, analog gear, accessories and merchandise, curated by Warmth&Grain.', ['banners/store', 'categories/cameras']);
+echo banner('Store', 'Browse cameras, film stocks, accessories, and other equipment.', ['banners/store', 'categories/cameras']);
 ?>
+
+<div class="box" style="margin-bottom: 30px;">
+  <p style="text-align:justify;">Welcome to the Warmth&Grain shop, where you can find cameras, film products, analog accessories, vintage equipment, and merchandise selected for people who appreciate the analog process. Whether you are looking for your first film camera, trying a new film stock, replacing an accessory, or simply adding something to your collection, browse our available products below.</p>
+</div>
+
 <div class="filter-box">
   <form class="filters" id="shopForm" method="get">
     <input type="search" name="q" value="<?= e($q) ?>" placeholder="Search products...">

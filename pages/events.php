@@ -4,7 +4,7 @@ $pageTitle = 'Events'; $hasBanner = true;
 include '../includes/header.php';
 $up = $pdo->query("SELECT * FROM events WHERE status='Published' AND event_date >= NOW() ORDER BY event_date")->fetchAll();
 $past = $pdo->query("SELECT * FROM events WHERE status='Published' AND event_date < NOW() ORDER BY event_date DESC")->fetchAll();
-echo banner('Community Events', 'Gear swaps, trading meetups and workshops for the film community.', ['banners/events', 'events/event-1-1']);
+echo banner('Community Events', 'Meet other film users through swaps, trading meetups, and photography activities.', ['banners/events', 'events/event-1-1']);
 $card = function ($ev) { ob_start(); ?>
   <a class="card card-wide card-link" href="event.php?id=<?= (int)$ev['event_id'] ?>">
     <div class="card-photo"><img src="<?= img('events/' . $ev['image']) ?>" alt="<?= e($ev['title']) ?>"></div>

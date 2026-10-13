@@ -7,7 +7,10 @@ $photos = array_filter(array_map(fn($i) => find_img("about/about-$i"), [1, 2, 3]
 ?>
 <div class="about">
   <h2>Our Story</h2>
-  <div class="box"><p>Warmth&amp;Grain began with a simple idea: people who love film should not have to visit five different places to keep shooting it. One shop to drop off a roll, another to find a camera, a third to repair it.</p>
+  <div class="box">
+    <p style="margin-bottom: 10px;"> More Than a Film Lab </p>
+    <p>Warmth&Grain was created to be more than a place where customers drop off their film. We want it to be a space where people can process their photographs, discover analog equipment, repair cameras that still have more stories to tell, and connect with others who enjoy the same craft.
+        From the first click of the shutter to the final developed negative, we aim to make the analog experience easier to access while still keeping the feeling that makes film photography special.</p>
   <p>So we built one lab that does it all. We develop, scan and print your film, repair the cameras that shot it, and run a small shop for the gear and film you need to keep going. Around the lab a community grew, and our gear swaps and trading meetups give old cameras a second life.</p></div>
   <?php if ($photos): ?><div class="about-photos"><?php foreach ($photos as $p): ?><img src="<?= e(BASE_URL . 'assets/img/' . $p) ?>" alt="Warmth&Grain"><?php endforeach; ?></div><?php endif; ?>
 

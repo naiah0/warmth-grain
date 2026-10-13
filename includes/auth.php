@@ -1,7 +1,32 @@
 <?php
-if (session_status() === PHP_SESSION_NONE) session_start();
+date_default_timezone_set('Asia/Manila');
+$__local = (bool)preg_match('/^(localhost|127\.0\.0\.1)(:\d+)?$/', $_SERVER['HTTP_HOST'] ?? '');
+ini_set('display_errors', $__local ? '1' : '0');   // never show PHP errors to visitors on the live site
+ini_set('log_errors', '1');
 
-define('BASE_URL', '/warmth-grain/');
+if (session_status() === PHP_SESSION_NONE) {
+    $__https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') || (($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https');
+    ini_set('session.use_strict_mode', '1');
+    session_set_cookie_params(['lifetime' => 0, 'path' => '/', 'secure' => $__https, 'httponly' => true, 'samesite' => 'Lax']);
+    session_start();
+}
+
+// Reject form posts that come from another website
+if (($_SERVER['REQUEST_METHOD'] ?? '') === 'POST') {
+    $__from = $_SERVER['HTTP_ORIGIN'] ?? ($_SERVER['HTTP_REFERER'] ?? '');
+    $__host = explode(':', $_SERVER['HTTP_HOST'] ?? '')[0];
+    $__fh = $__from !== '' ? parse_url($__from, PHP_URL_HOST) : $__host;
+    $__devOk = in_array($__fh, ['localhost', '127.0.0.1'], true) && in_array($__host, ['localhost', '127.0.0.1'], true);
+    if ($__fh !== $__host && !$__devOk) { http_response_code(403); exit('Blocked: invalid request origin.'); }
+}
+
+// BASE_URL is detected automatically: /warmth-grain/ on XAMPP and / on a live host
+$__root = rtrim(str_replace('\\', '/', (string)realpath($_SERVER['DOCUMENT_ROOT'] ?? '')), '/');
+$__proj = rtrim(str_replace('\\', '/', (string)realpath(__DIR__ . '/..')), '/');
+$__base = ($__root !== '' && strpos($__proj, $__root) === 0) ? substr($__proj, strlen($__root)) : '/warmth-grain';
+define('BASE_URL', rtrim($__base, '/') . '/');
+
+const ADMIN_PASSCODE = '1234'; // 4-digit second step for admin login
 const SERVICE_CHARGE_RATE = 0.10;
 const VAT_RATE = 0.12;
 const PAY_METHODS = ['GoTyme', 'GCash', 'Maya', 'Cash'];
@@ -41,6 +66,8 @@ function icon($name, $size = 20) {
         'cart' => '<circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h9.7a2 2 0 0 0 2-1.6L23 6H6"/>',
         'refresh' => '<path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/>',
         'back' => '<path d="M19 12H5M11 6l-6 6 6 6"/>',
+        'mail' => '<rect x="3" y="5" width="18" height="14"/><path d="M3 7l9 6 9-6"/>',
+        'check' => '<path d="M5 12.5l4.5 4.5L19 7.5"/>',
     ];
     return '<svg class="ico" width="' . $size . '" height="' . $size . '" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' . ($p[$name] ?? '') . '</svg>';
 }

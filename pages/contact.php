@@ -2,8 +2,11 @@
 require_once '../config/db.php';
 $pageTitle = 'Contact';
 include '../includes/header.php';
-$user = ['full_name' => '', 'email' => ''];
-if (is_logged_in()) { $u = $pdo->prepare('SELECT full_name, email FROM users WHERE user_id=?'); $u->execute([$_SESSION['user_id']]); $user = $u->fetch() ?: $user; }
+$user = ['full_name' => '', 'email' => '']; $unack = 0;
+if (is_logged_in()) {
+    $u = $pdo->prepare('SELECT full_name, email FROM users WHERE user_id=?'); $u->execute([$_SESSION['user_id']]); $user = $u->fetch() ?: $user;
+    $c = $pdo->prepare("SELECT COUNT(*) FROM messages WHERE user_id=? AND status='Replied' AND customer_ack=0"); $c->execute([$_SESSION['user_id']]); $unack = (int)$c->fetchColumn();
+}
 ?>
 <h1 class="page-title">Contact Us</h1>
 <div class="contact-details">
@@ -14,6 +17,9 @@ if (is_logged_in()) { $u = $pdo->prepare('SELECT full_name, email FROM users WHE
 </div>
 
 <h2>Send an Inquiry</h2>
+<?php if (is_logged_in()): ?>
+  <div class="inq-top"><a class="inq-box" href="<?= BASE_URL ?>pages/account/inquiries.php"><?= icon('mail', 18) ?> My Inquiries<?= $unack ? ' <span class="inq-count">' . $unack . '</span>' : '' ?></a></div>
+<?php endif; ?>
 <form class="form wide" method="post" action="<?= BASE_URL ?>actions/contact_action.php" data-validate novalidate>
   <div class="form-grid">
     <div><label for="name">Full Name</label><span class="hint">Enter your complete name.</span><input type="text" id="name" name="name" value="<?= e($user['full_name']) ?>" required></div>
@@ -23,7 +29,5 @@ if (is_logged_in()) { $u = $pdo->prepare('SELECT full_name, email FROM users WHE
   <input type="text" id="subject" name="subject" required>
   <label for="message">Message</label><span class="hint">Tell us how we can help you.</span>
   <textarea id="message" name="message" rows="5" required></textarea>
-  <button class="btn" type="submit">Send Inquiry</button>
-  <?php if (is_logged_in()): ?><a class="btn btn-outline" href="<?= BASE_URL ?>pages/account/inquiries.php">View My Inquiries and Replies</a><?php endif; ?>
+  <div class="form-actions"><button class="btn" type="submit">Send Inquiry</button></div>
 </form>
-<?php include '../includes/footer.php'; ?>
