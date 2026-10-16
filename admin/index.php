@@ -47,9 +47,9 @@ $evs = $pdo->query("SELECT e.title, e.event_date, (SELECT COALESCE(SUM(guests),0
     <div class="bars"><?php foreach ($days as $d => $v): ?><div class="bar"><small><?= $v ? '₱' . number_format($v) : '' ?></small><i style="height:<?= round($v / $maxDay * 100) ?>%"></i><small><?= date('D', strtotime($d)) ?></small></div><?php endforeach; ?></div></div>
   <div class="panel"><h3>Revenue by Service</h3>
     <table class="mini"><?php foreach ($names as $k => $l): ?><tr><td><?= e($l) ?></td><td><?= peso($byType[$k] ?? 0) ?></td></tr><?php endforeach; ?></table></div>
-  <div class="panel panel-payments"><h3>Payments Waiting for You</h3>
+<div class="panel has-foot"><h3>Payments Waiting for You</h3>
     <table class="mini"><?php foreach ($pay as $p): ?><tr><td><?= e(ref_code($p['payment_type'], $p['reference_id'])) ?> &middot; <?= e($p['full_name']) ?></td><td><?= peso($p['amount']) ?></td></tr><?php endforeach; if (!$pay) echo '<tr><td>Nothing to verify.</td><td></td></tr>'; ?></table>
-    <p class="payment-open"><a class="btn btn-sm" href="payments.php">Open Payments</a></p></div>
+<div class="panel-foot"><a class="btn btn-sm" href="payments.php">Open Payments</a></div></div>
   <div class="panel"><h3>Upcoming Drop-offs</h3>
     <table class="mini"><?php foreach ($upcoming as $u): ?><tr><td><?= e($u['kind']) ?> &middot; <?= e($u['code']) ?></td><td><?= date('M d', strtotime($u['dt'])) ?></td></tr><?php endforeach; if (!$upcoming) echo '<tr><td>No upcoming drop-offs.</td><td></td></tr>'; ?></table></div>
   <div class="panel"><h3>Top Selling Products</h3>
