@@ -36,3 +36,4 @@ include '../includes/header.php';
   <?php endif; ?>
   </div>
 </div>
+<?php include '../includes/footer.php'; ?>

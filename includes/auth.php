@@ -35,8 +35,8 @@ const REPAIR_DAILY_LIMIT = 5;
 const BOOKING_FLOW = ['Booked', 'Received', 'Developing', 'Scanning', 'Printing', 'Ready for Pickup', 'Completed'];
 const REPAIR_FLOW  = ['Booked', 'Received', 'Under Inspection', 'Repairing', 'Ready for Pickup', 'Completed'];
 const ORDER_FLOW   = ['Processing', 'Ready', 'Completed'];
-const BIZ_EMAIL = 'hello@warmthandgrain.example';
-const BIZ_PHONE = '0917 000 0000';
+const BIZ_EMAIL = 'danaiahniccolabajao@gmail.com';
+const BIZ_PHONE = '0919 005 0355';
 const BIZ_HOURS = 'Mon-Fri: 10:00 AM to 5:00 PM';
 const BIZ_ADDRESS = 'Unit 12, Example Building, Example Street, Quezon City, Metro Manila';
 
