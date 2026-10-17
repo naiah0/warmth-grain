@@ -16,7 +16,7 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
   <title><?= e($pageTitle) ?> | Warmth&amp;Grain</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
+  <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css?v=<?= (int)filemtime(__DIR__ . '/../assets/css/style.css') ?>">
 </head>
 <body class="<?= $adminMode ? 'admin-body' : '' ?>">
 <?php if ($adminMode):
@@ -27,7 +27,7 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
   if ($admCur === 'records.php' && $admType === '') $admType = 'booking';
   $admLinks = [
     ['index.php', 'Dashboard', ''], ['records.php', 'Film Processing', 'booking'], ['records.php', 'Repairs', 'repair'], ['records.php', 'Orders', 'order'],
-    ['payments.php', 'Payments', ''], ['products.php', 'Products', ''], ['events.php', 'Events', ''], ['customers.php', 'Customers', ''], ['messages.php', 'Messages', ''],
+    ['payments.php', 'Payments', ''], ['products.php', 'Products', ''], ['events.php', 'Events', ''], ['customers.php', 'Customers', ''],
   ];
 ?>
 <header class="admin-bar">
@@ -39,11 +39,12 @@ $hdrIs     = fn($n) => strpos($hdrCur, $n) !== false ? 'active' : '';
     <nav class="admin-links" id="adminLinks">
       <?php foreach ($admLinks as $admL): ?>
         <a href="<?= BASE_URL ?>admin/<?= $admL[0] . ($admL[2] ? '?type=' . $admL[2] : '') ?>" class="<?= ($admCur === $admL[0] && ($admL[2] === '' || $admL[2] === $admType)) ? 'active' : '' ?>">
-          <?= e($admL[1]) ?><?= ($admL[1] === 'Messages' && $hdrNew) ? ' <span class="cart-badge">' . $hdrNew . '</span>' : '' ?>
+          <?= e($admL[1]) ?>
         </a>
       <?php endforeach; ?>
     </nav>
     <div class="admin-user-box">
+      <a class="admin-message-link <?= $admCur === 'messages.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>admin/messages.php" aria-label="<?= $hdrNew ? $hdrNew . ' new messages' : 'Messages' ?>" title="Messages"><?= icon('mail', 18) ?><?php if ($hdrNew): ?><span class="admin-message-count"><?= $hdrNew > 99 ? '99+' : $hdrNew ?></span><?php endif; ?></a>
       <a class="admin-profile-box <?= $admCur === 'profile.php' ? 'active' : '' ?>" href="<?= BASE_URL ?>admin/profile.php" title="Edit admin profile"><?= icon('user', 18) ?> <span><?= e($_SESSION['name']) ?></span></a>
       <a class="btn btn-danger btn-sm btn-logout" href="<?= BASE_URL ?>pages/logout.php" data-confirm="Log out of your account?">LOGOUT</a>
     </div>
